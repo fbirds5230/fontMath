@@ -438,6 +438,37 @@ class MathKerningTest(unittest.TestCase):
         self.assertFalse(mathKerning1 > mathKerning2)
         self.assertNotEqual(mathKerning1, mathKerning2)
 
+    def test_compare_first_kerning_difference(self):
+        first = MathKerning({("A", "V"): -80, ("T", "o"): -20})
+        second = MathKerning({("A", "V"): -70, ("T", "o"): -30})
+
+        self.assertTrue(first < second)
+        self.assertFalse(second < first)
+        self.assertEqual(sorted([first, second]), [first, second])
+        self.assertEqual(sorted([second, first]), [first, second])
+
+    def test_compare_first_group_difference(self):
+        for prefix in ("public.kern1.", "public.kern2."):
+            with self.subTest(prefix=prefix):
+                first = MathKerning(groups={
+                    prefix + "A": ["A"], prefix + "B": ["Z"]})
+                second = MathKerning(groups={
+                    prefix + "A": ["B"], prefix + "B": ["Y"]})
+
+                self.assertTrue(first < second)
+                self.assertFalse(second < first)
+                self.assertEqual(sorted([first, second]), [first, second])
+                self.assertEqual(sorted([second, first]), [first, second])
+
+    def test_compare_kerning_before_groups(self):
+        first = MathKerning({("A", "V"): -80},
+                            {"public.kern1.A": ["Z"]})
+        second = MathKerning({("A", "V"): -70},
+                             {"public.kern1.A": ["A"]})
+
+        self.assertTrue(first < second)
+        self.assertFalse(second < first)
+
     def test_div_tuple_factor(self):
         kerning = {
             ("A", "A"): 0,

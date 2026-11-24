@@ -271,6 +271,8 @@ class MathKerning(object):
                 return False
             elif first[key] < second[key]:
                 return True
+            elif first[key] > second[key]:
+                return False
         return None
 
     def __lt__(self, other):
